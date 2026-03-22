@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Project | Loyiha mualliflari</title>
+<style>
+:root{
+  --bg:#020617;
+  --card:rgba(255,255,255,.08);
+  --text:#fff;
+  --accent:#38bdf8;
+}
+.light{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#020617;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,sans-serif}
+body{background:var(--bg);color:var(--text);transition:.5s;overflow-x:hidden}
+button{cursor:pointer;border:none;padding:10px 16px;border-radius:14px;background:var(--accent);color:#000;font-weight:600;transition:.3s}
+button:hover{transform:scale(1.05)}
+header{max-width:100%;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.toggle{background:var(--card);color:var(--text)}
+.clock{margin-top:10px;background:var(--card);padding:6px 14px;border-radius:14px;color:var(--accent)}
+.authors{padding:50px 5%;text-align:center}
+.authors h1{font-size:2.4rem;margin-bottom:30px;background:linear-gradient(90deg,#38bdf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.author-grid{max-width:100%;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px}
+.author-card{background:var(--card);padding:30px;border-radius:26px;box-shadow:0 15px 35px rgba(0,0,0,.4);opacity:0;transform:translateY(40px);transition:.6s;display:flex;flex-direction:column;align-items:center;text-align:center}
+.author-card.show{opacity:1;transform:translateY(0)}
+.author-card:hover{transform:translateY(-10px);box-shadow:0 25px 55px rgba(56,189,248,.5)}
+.avatar{width:150px;height:150px;margin:auto;border-radius:50%;overflow:hidden;border:3px solid var(--accent)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.form-box{max-width:600px;margin:50px auto;background:var(--card);padding:30px;border-radius:24px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.form-box h3{margin-bottom:15px}
+.form-box input{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:none}
+#preview img{width:100px;height:100px;border-radius:50%;border:2px solid var(--accent);margin-bottom:10px}
+.games{padding:50px 5%;text-align:center}
+.games-grid{max-width:100%;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px}
+.game{background:var(--card);padding:25px;border-radius:18px;text-align:center;font-weight:600;font-size:1.05rem}
+footer{margin-top:100px;padding:50px 5% 40px;background:linear-gradient(180deg,#020617,#000);border-top:1px solid rgba(255,255,255,.15)}
+.footer-grid{max-width:100%;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px}
+.footer-card{background:rgba(255,255,255,.08);padding:30px;border-radius:22px;backdrop-filter:blur(18px)}
+.footer-card h4{color:var(--accent);margin-bottom:10px}
+.copy{text-align:center;margin-top:50px;opacity:.6;font-size:.85rem}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(56,189,248,.9);color:#fff;padding:14px 24px;border-radius:24px;font-weight:600;font-size:.95rem;opacity:0;pointer-events:none;transition:.5s;z-index:9999;}
+#toast.show{opacity:1;}
+#fileModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:99999;padding:20px}
+#fileModalContent{width:100%;max-width:900px;background:var(--card);padding:20px;border-radius:16px;position:relative;display:flex;flex-direction:column;align-items:center}
+#fileModal iframe{width:100%;height:70vh;border:none}
+#closeModal{position:absolute;top:10px;right:10px;background:#ff4d4d;color:#fff;border:none;padding:6px 12px;border-radius:8px;cursor:pointer}
+@media(max-width:768px){.author-card{padding:20px}.avatar{width:120px;height:120px}.games-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.form-box{padding:20px}}
+@media(max-width:480px){.authors h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<header>
+  <h2>🚀 Ultimate Project</h2>
+  <div>
+    <button class="toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+    <div class="clock" id="clock"></div>
+  </div>
+</header>
+
+<section class="authors">
+  <h1>Loyiha mualliflari</h1>
+  <div class="author-grid" id="authors"></div>
+</section>
+
+<section class="form-box">
+  <h3>➕ Muallif qo‘shish</h3>
+  <input id="name" placeholder="Ism">
+  <input id="role" placeholder="Yo‘nalish">
+  <input type="file" id="file" accept="image/*,.html,.pdf,.txt">
+  <div id="preview"></div>
+  <button onclick="addAuthor()">Qo‘shish</button>
+</section>
+
+<section class="games">
+  <h2>🎮 O‘yinlar menyusi</h2>
+  <div class="games-grid">
+    <div class="game">Memory Game</div>
+    <div class="game">IQ Test</div>
+    <div class="game">Logic Puzzle</div>
+    <div class="game">Cyber Quiz</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-card">
+      <h4>📌 Sayt hujjati</h4>
+      <p>Ta’limiy va intellektual loyiha keng auditoriya uchun mo‘ljallangan. Mualliflar, ularning ish faoliyati va qo‘shimcha fayllari orqali foydalanuvchilar interaktiv tarzda bilim olishi mumkin.</p>
+    </div>
+    <div class="footer-card">
+      <h4>💻 Texnologiyalar</h4>
+      <p>HTML5, CSS3, JavaScript<br>Visual Studio Code</p>
+    </div>
+    <div class="footer-card">
+      <h4>🎯 Kimlar uchun</h4>
+      <p>O‘quvchilar, yosh dasturchilar, o‘qituvchilar</p>
+    </div>
+  </div>
+  <div class="copy">© <span id="year"></span> Ultimate Project</div>
+</footer>
+
+<div id="toast"></div>
+<div id="fileModal">
+  <div id="fileModalContent">
+    <button id="closeModal" onclick="closeModal()">X</button>
+    <iframe id="fileFrame"></iframe>
+  </div>
+</div>
+
+<script>
+function toggleTheme(){document.body.classList.toggle("light")}
+function updateClock(){
+  const n=new Date();
+  clock.textContent=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}:${String(n.getSeconds()).padStart(2,"0")} | ${String(n.getDate()).padStart(2,"0")}.${String(n.getMonth()+1).padStart(2,"0")}.${n.getFullYear()}`
+}
+setInterval(updateClock,1000);updateClock();
+function showToast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2000);
+}
+const nameInput=document.getElementById("name");
+const roleInput=document.getElementById("role");
+const fileInput=document.getElementById("file");
+const preview=document.getElementById("preview");
+let authors=JSON.parse(localStorage.getItem("authors"))||[];
+let editIndex=null;
+
+fileInput.onchange=()=>{
+  const f=fileInput.files[0]; if(!f) return preview.innerHTML="";
+  const r=new FileReader(); r.onload=e=>preview.innerHTML=`<img src="${e.target.result}">`; r.readAsDataURL(f);
+};
+
+function render(){
+  const box=document.getElementById("authors"); box.innerHTML="";
+  authors.forEach((a,i)=>{
+    const d=document.createElement("div"); d.className="author-card";
+    let fileBtn='';
+    if(a.file){fileBtn=`<button onclick="viewFile(${i})">📂 Faylni ko‘rish</button>`;}
+    d.innerHTML=`
+      <div class="avatar"><img src="${a.img}"></div>
+      <h3>${a.name}</h3>
+      <p>${a.role}</p>
+      <div style="display:flex;justify-content:center;gap:10px;margin-top:10px;">
+        <button onclick="startEdit(${i})">✏️ Tahrirlash</button>
+        <button onclick="deleteAuthor(${i})">🗑 O‘chirish</button>
+        ${fileBtn}
+      </div>`;
+    box.appendChild(d); setTimeout(()=>d.classList.add("show"),100);
+  });
+}
+
+function addAuthor(){
+  const name=nameInput.value.trim();
+  const role=roleInput.value.trim();
+  if(!name||!role){showToast("Ism va yo‘nalishni kiriting!"); return;}
+  const authorObj={name,role};
+  if(fileInput.files.length){
+    const file=fileInput.files[0]; const reader=new FileReader();
+    reader.onload=e=>{authorObj.file={name:file.name,data:e.target.result,type:file.type}; processImage(img=>{authorObj.img=img; saveAuthor(authorObj,"Muallif qo‘shildi ✅");});};
+    reader.readAsDataURL(file);
+  } else {processImage(img=>{authorObj.img=img||'https://via.placeholder.com/150/38bdf8/000?text=?'; saveAuthor(authorObj,"Muallif qo‘shildi ✅");});}
+}
+
+function processImage(cb){
+  if(fileInput.files.length && fileInput.files[0].type.startsWith("image/")){
+    const r=new FileReader(); const img=new Image();
+    r.onload=e=>img.src=e.target.result;
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=c.height=150; c.getContext("2d").drawImage(img,0,0,150,150); cb(c.toDataURL("image/jpeg",0.7)); }
+    r.readAsDataURL(fileInput.files[0]);
+  } else cb('https://via.placeholder.com/150/38bdf8/000?text=?');
+}
+
+function saveAuthor(authorObj,msg){
+  if(editIndex!==null){authors[editIndex]=authorObj; editIndex=null; showToast("Tahrirlandi ✏️");} else {authors.push(authorObj); showToast(msg);}
+  localStorage.setItem("authors",JSON.stringify(authors)); render(); resetForm();
+}
+
+function startEdit(i){const a=authors[i]; nameInput.value=a.name; roleInput.value=a.role; preview.innerHTML=`<img src="${a.img}">`; document.querySelector(".form-box button").textContent="Saqlash"; editIndex=i;}
+function deleteAuthor(i){authors.splice(i,1); saveLocal(); showToast("O‘chirildi 🗑");}
+function saveLocal(){ localStorage.setItem("authors",JSON.stringify(authors)); render(); resetForm(); }
+function resetForm(){ nameInput.value=""; roleInput.value=""; fileInput.value=""; preview.innerHTML=""; document.querySelector(".form-box button").textContent="Qo‘shish"; editIndex=null; }
+function viewFile(i){ const file=authors[i].file; if(!file) return; const modal=document.getElementById("fileModal"); const frame=document.getElementById("fileFrame"); if(file.type.startsWith("image/")||file.type==="application/pdf"||file.type==="text/html"||file.type==="text/plain"){frame.src=file.data;} else {frame.src=""; alert("Bu fayl turi ko‘rilmaydi!");} modal.style.display="flex"; showToast("Fayl ochildi 👀"); }
+function closeModal(){ document.getElementById("fileModal").style.display="none"; document.getElementById("fileFrame").src=""; }
+
+render(); document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html><!DOCTYPE html<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Project | Loyiha mualliflari</title>
+<style>
+:root{
+  --bg:#020617;
+  --card:rgba(255,255,255,.08);
+  --text:#fff;
+  --accent:#38bdf8;
+}
+.light{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#020617;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,sans-serif}
+body{background:var(--bg);color:var(--text);transition:.5s;overflow-x:hidden}
+button{cursor:pointer;border:none;padding:10px 16px;border-radius:14px;background:var(--accent);color:#000;font-weight:600;transition:.3s}
+button:hover{transform:scale(1.05)}
+header{max-width:100%;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.toggle{background:var(--card);color:var(--text)}
+.clock{margin-top:10px;background:var(--card);padding:6px 14px;border-radius:14px;color:var(--accent)}
+.authors{padding:50px 5%;text-align:center}
+.authors h1{font-size:2.4rem;margin-bottom:30px;background:linear-gradient(90deg,#38bdf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.author-grid{max-width:100%;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px}
+.author-card{background:var(--card);padding:30px;border-radius:26px;box-shadow:0 15px 35px rgba(0,0,0,.4);opacity:0;transform:translateY(40px);transition:.6s;display:flex;flex-direction:column;align-items:center;text-align:center}
+.author-card.show{opacity:1;transform:translateY(0)}
+.author-card:hover{transform:translateY(-10px);box-shadow:0 25px 55px rgba(56,189,248,.5)}
+.avatar{width:150px;height:150px;margin:auto;border-radius:50%;overflow:hidden;border:3px solid var(--accent)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.form-box{max-width:600px;margin:50px auto;background:var(--card);padding:30px;border-radius:24px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.form-box h3{margin-bottom:15px}
+.form-box input{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:none}
+#preview img{width:100px;height:100px;border-radius:50%;border:2px solid var(--accent);margin-bottom:10px}
+.games{padding:50px 5%;text-align:center}
+.games-grid{max-width:100%;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px}
+.game{background:var(--card);padding:25px;border-radius:18px;text-align:center;font-weight:600;font-size:1.05rem}
+footer{margin-top:100px;padding:50px 5% 40px;background:linear-gradient(180deg,#020617,#000);border-top:1px solid rgba(255,255,255,.15)}
+.footer-grid{max-width:100%;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px}
+.footer-card{background:rgba(255,255,255,.08);padding:30px;border-radius:22px;backdrop-filter:blur(18px)}
+.footer-card h4{color:var(--accent);margin-bottom:10px}
+.copy{text-align:center;margin-top:50px;opacity:.6;font-size:.85rem}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(56,189,248,.9);color:#fff;padding:14px 24px;border-radius:24px;font-weight:600;font-size:.95rem;opacity:0;pointer-events:none;transition:.5s;z-index:9999;}
+#toast.show{opacity:1;}
+#fileModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:99999;padding:20px}
+#fileModalContent{width:100%;max-width:900px;background:var(--card);padding:20px;border-radius:16px;position:relative;display:flex;flex-direction:column;align-items:center}
+#fileModal iframe{width:100%;height:70vh;border:none}
+#closeModal{position:absolute;top:10px;right:10px;background:#ff4d4d;color:#fff;border:none;padding:6px 12px;border-radius:8px;cursor:pointer}
+@media(max-width:768px){.author-card{padding:20px}.avatar{width:120px;height:120px}.games-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.form-box{padding:20px}}
+@media(max-width:480px){.authors h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<header>
+  <h2>🚀 Ultimate Project</h2>
+  <div>
+    <button class="toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+    <div class="clock" id="clock"></div>
+  </div>
+</header>
+
+<section class="authors">
+  <h1>Loyiha mualliflari</h1>
+  <div class="author-grid" id="authors"></div>
+</section>
+
+<section class="form-box">
+  <h3>➕ Muallif qo‘shish</h3>
+  <input id="name" placeholder="Ism">
+  <input id="role" placeholder="Yo‘nalish">
+  <input type="file" id="file" accept="image/*,.html,.pdf,.txt">
+  <input type="file" id="file" accept="image/*,.html,.pdf,.txt">
+  <div id="preview"></div>
+  <button onclick="addAuthor()">Qo‘shish</button>
+</section>
+
+<section class="games">
+  <h2>🎮 O‘yinlar menyusi</h2>
+  <div class="games-grid">
+    <div class="game">Memory Game</div>
+    <div class="game">IQ Test</div>
+    <div class="game">Logic Puzzle</div>
+    <div class="game">Cyber Quiz</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-card">
+      <h4>📌 Sayt hujjati</h4>
+      <p>Ta’limiy va intellektual loyiha keng auditoriya uchun mo‘ljallangan. Mualliflar, ularning ish faoliyati va qo‘shimcha fayllari orqali foydalanuvchilar interaktiv tarzda bilim olishi mumkin.</p>
+    </div>
+    <div class="footer-card">
+      <h4>💻 Texnologiyalar</h4>
+      <p>HTML5, CSS3, JavaScript<br>Visual Studio Code</p>
+    </div>
+    <div class="footer-card">
+      <h4>🎯 Kimlar uchun</h4>
+      <p>O‘quvchilar, yosh dasturchilar, o‘qituvchilar</p>
+    </div>
+  </div>
+  <div class="copy">© <span id="year"></span> Ultimate Project</div>
+</footer>
+
+<div id="toast"></div>
+<div id="fileModal">
+  <div id="fileModalContent">
+    <button id="closeModal" onclick="closeModal()">X</button>
+    <iframe id="fileFrame"></iframe>
+  </div>
+</div>
+
+<script>
+function toggleTheme(){document.body.classList.toggle("light")}
+function updateClock(){
+  const n=new Date();
+  clock.textContent=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}:${String(n.getSeconds()).padStart(2,"0")} | ${String(n.getDate()).padStart(2,"0")}.${String(n.getMonth()+1).padStart(2,"0")}.${n.getFullYear()}`
+}
+setInterval(updateClock,1000);updateClock();
+function showToast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2000);
+}
+const nameInput=document.getElementById("name");
+const roleInput=document.getElementById("role");
+const fileInput=document.getElementById("file");
+const preview=document.getElementById("preview");
+let authors=JSON.parse(localStorage.getItem("authors"))||[];
+let editIndex=null;
+
+fileInput.onchange=()=>{
+  const f=fileInput.files[0]; if(!f) return preview.innerHTML="";
+  const r=new FileReader(); r.onload=e=>preview.innerHTML=`<img src="${e.target.result}">`; r.readAsDataURL(f);
+};
+
+function render(){
+  const box=document.getElementById("authors"); box.innerHTML="";
+  authors.forEach((a,i)=>{
+    const d=document.createElement("div"); d.className="author-card";
+    let fileBtn='';
+    if(a.file){fileBtn=`<button onclick="viewFile(${i})">📂 Faylni ko‘rish</button>`;}
+    d.innerHTML=`
+      <div class="avatar"><img src="${a.img}"></div>
+      <h3>${a.name}</h3>
+      <p>${a.role}</p>
+      <div style="display:flex;justify-content:center;gap:10px;margin-top:10px;">
+        <button onclick="startEdit(${i})">✏️ Tahrirlash</button>
+        <button onclick="deleteAuthor(${i})">🗑 O‘chirish</button>
+        ${fileBtn}
+      </div>`;
+    box.appendChild(d); setTimeout(()=>d.classList.add("show"),100);
+  });
+}
+
+function addAuthor(){
+  const name=nameInput.value.trim();
+  const role=roleInput.value.trim();
+  if(!name||!role){showToast("Ism va yo‘nalishni kiriting!"); return;}
+  const authorObj={name,role};
+  if(fileInput.files.length){
+    const file=fileInput.files[0]; const reader=new FileReader();
+    reader.onload=e=>{authorObj.file={name:file.name,data:e.target.result,type:file.type}; processImage(img=>{authorObj.img=img; saveAuthor(authorObj,"Muallif qo‘shildi ✅");});};
+    reader.readAsDataURL(file);
+  } else {processImage(img=>{authorObj.img=img||'https://via.placeholder.com/150/38bdf8/000?text=?'; saveAuthor(authorObj,"Muallif qo‘shildi ✅");});}
+}
+
+function processImage(cb){
+  if(fileInput.files.length && fileInput.files[0].type.startsWith("image/")){
+    const r=new FileReader(); const img=new Image();
+    r.onload=e=>img.src=e.target.result;
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=c.height=150; c.getContext("2d").drawImage(img,0,0,150,150); cb(c.toDataURL("image/jpeg",0.7)); }
+    r.readAsDataURL(fileInput.files[0]);
+  } else cb('https://via.placeholder.com/150/38bdf8/000?text=?');
+}
+
+function saveAuthor(authorObj,msg){
+  if(editIndex!==null){authors[editIndex]=authorObj; editIndex=null; showToast("Tahrirlandi ✏️");} else {authors.push(authorObj); showToast(msg);}
+  localStorage.setItem("authors",JSON.stringify(authors)); render(); resetForm();
+}
+
+function startEdit(i){const a=authors[i]; nameInput.value=a.name; roleInput.value=a.role; preview.innerHTML=`<img src="${a.img}">`; document.querySelector(".form-box button").textContent="Saqlash"; editIndex=i;}
+function deleteAuthor(i){authors.splice(i,1); saveLocal(); showToast("O‘chirildi 🗑");}
+function saveLocal(){ localStorage.setItem("authors",JSON.stringify(authors)); render(); resetForm(); }
+function resetForm(){ nameInput.value=""; roleInput.value=""; fileInput.value=""; preview.innerHTML=""; document.querySelector(".form-box button").textContent="Qo‘shish"; editIndex=null; }
+function viewFile(i){ const file=authors[i].file; if(!file) return; const modal=document.getElementById("fileModal"); const frame=document.getElementById("fileFrame"); if(file.type.startsWith("image/")||file.type==="application/pdf"||file.type==="text/html"||file.type==="text/plain"){frame.src=file.data;} else {frame.src=""; alert("Bu fayl turi ko‘rilmaydi!");} modal.style.display="flex"; showToast("Fayl ochildi 👀"); }
+function closeModal(){ document.getElementById("fileModal").style.display="none"; document.getElementById("fileFrame").src=""; }
+
+render(); document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Project | Loyiha mualliflari</title>
+<style>
+:root{
+  --bg:#020617;
+  --card:rgba(255,255,255,.08);
+  --text:#fff;
+  --accent:#38bdf8;
+}
+.light{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#020617;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,sans-serif}
+body{background:var(--bg);color:var(--text);transition:.5s}
+button{cursor:pointer;border:none;padding:10px 16px;border-radius:14px;background:var(--accent);color:#000;font-weight:600;transition:.3s}
+button:hover{transform:scale(1.05)}
+header{max-width:1200px;margin:auto;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.toggle{background:var(--card);color:var(--text)}
+.clock{margin-top:10px;background:var(--card);padding:6px 14px;border-radius:14px;color:var(--accent)}
+.authors{padding:70px 20px;text-align:center}
+.authors h1{font-size:2.4rem;margin-bottom:30px;background:linear-gradient(90deg,#38bdf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.author-grid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px}
+.author-card{background:var(--card);padding:30px;border-radius:26px;box-shadow:0 15px 35px rgba(0,0,0,.4);opacity:0;transform:translateY(40px);transition:.6s}
+.author-card.show{opacity:1;transform:translateY(0)}
+.author-card:hover{transform:translateY(-10px);box-shadow:0 25px 55px rgba(56,189,248,.5)}
+.avatar{width:120px;height:120px;margin:auto;border-radius:50%;overflow:hidden;border:3px solid var(--accent)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.form-box{max-width:500px;margin:80px auto;background:var(--card);padding:30px;border-radius:24px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.form-box h3{margin-bottom:15px}
+.form-box input{width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:none}
+#preview img{width:80px;height:80px;border-radius:50%;border:2px solid var(--accent);margin-bottom:10px}
+.games{padding:70px 20px;text-align:center}
+.games-grid{max-width:1000px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px}
+.game{background:var(--card);padding:25px;border-radius:18px}
+footer{margin-top:100px;padding:70px 20px 40px;background:linear-gradient(180deg,#020617,#000);border-top:1px solid rgba(255,255,255,.15)}
+.footer-grid{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px}
+.footer-card{background:rgba(255,255,255,.08);padding:30px;border-radius:22px;backdrop-filter:blur(18px)}
+.footer-card h4{color:var(--accent);margin-bottom:10px}
+.copy{text-align:center;margin-top:50px;opacity:.6;font-size:.85rem}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(56,189,248,.9);color:#fff;padding:14px 24px;border-radius:24px;font-weight:600;font-size:.95rem;opacity:0;pointer-events:none;transition:.5s;z-index:9999;}
+#toast.show{opacity:1;}
+/* Modal */
+#fileModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:99999}
+#fileModalContent{width:90%;max-width:800px;background:var(--card);padding:20px;border-radius:16px;position:relative}
+#fileModal iframe{width:100%;height:500px;border:none}
+#closeModal{position:absolute;top:10px;right:10px;background:#ff4d4d;color:#fff;border:none;padding:6px 12px;border-radius:8px;cursor:pointer}
+@media(max-width:480px){.authors h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<header>
+  <h2>🚀 Ultimate Project</h2>
+  <div>
+    <button class="toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+    <div class="clock" id="clock"></div>
+  </div>
+</header>
+
+<section class="authors">
+  <h1>Loyiha mualliflari</h1>
+  <div class="author-grid" id="authors"></div>
+</section>
+
+<section class="form-box">
+  <h3>➕ Muallif qo‘shish</h3>
+  <input id="name" placeholder="Ism">
+  <input id="role" placeholder="Yo‘nalish">
+  <input type="file" id="file" accept="image/*,.html,.pdf,.txt">
+  <div id="preview"></div>
+  <button onclick="addAuthor()">Qo‘shish</button>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-card">
+      <h4>📌 Sayt hujjati</h4>
+      <p>Ta’limiy va intellektual loyiha keng auditoriya uchun mo‘ljallangan. Mualliflar, ularning ish faoliyati va qo‘shimcha fayllari orqali foydalanuvchilar interaktiv tarzda bilim olishi mumkin.</p>
+    </div>
+    <div class="footer-card">
+      <h4>💻 Texnologiyalar</h4>
+      <p>HTML5, CSS3, JavaScript<br>Visual Studio Code</p>
+    </div>
+    <div class="footer-card">
+      <h4>🎯 Kimlar uchun</h4>
+      <p>O‘quvchilar, yosh dasturchilar, o‘qituvchilar</p>
+    </div>
+  </div>
+  <div class="copy">© <span id="year"></span> Ultimate Project</div>
+</footer>
+
+<div id="toast"></div>
+
+<!-- Modal -->
+<div id="fileModal">
+  <div id="fileModalContent">
+    <button id="closeModal" onclick="closeModal()">X</button>
+    <iframe id="fileFrame"></iframe>
+  </div>
+</div>
+
+<script>
+function toggleTheme(){document.body.classList.toggle("light")}
+
+/* Clock */
+function updateClock(){
+  const n=new Date();
+  clock.textContent=`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}:${String(n.getSeconds()).padStart(2,"0")} | ${String(n.getDate()).padStart(2,"0")}.${String(n.getMonth()+1).padStart(2,"0")}.${n.getFullYear()}`
+}
+setInterval(updateClock,1000);updateClock();
+
+/* Toast */
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2000);
+}
+
+/* Author System */
+const nameInput=document.getElementById("name");
+const roleInput=document.getElementById("role");
+const fileInput=document.getElementById("file");
+const preview=document.getElementById("preview");
+let authors=JSON.parse(localStorage.getItem("authors"))||[];
+let editIndex=null;
+
+fileInput.onchange=()=>{
+  const f=fileInput.files[0];
+  if(!f) return preview.innerHTML="";
+  const r=new FileReader();
+  r.onload=e=>preview.innerHTML=`<img src="${e.target.result}">`;
+  r.readAsDataURL(f);
+};
+
+function render(){
+  const box=document.getElementById("authors");
+  box.innerHTML="";
+  authors.forEach((a,i)=>{
+    const d=document.createElement("div");
+    d.className="author-card";
+    let fileBtn='';
+    if(a.file){
+      fileBtn=`<button onclick="viewFile(${i})">📂 Faylni ko‘rish</button>`;
+    }
+    d.innerHTML=`
+      <div class="avatar"><img src="${a.img}"></div>
+      <h3>${a.name}</h3>
+      <p>${a.role}</p>
+      <div style="display:flex;justify-content:center;gap:10px;margin-top:10px;">
+        <button onclick="startEdit(${i})">✏️ Tahrirlash</button>
+        <button onclick="deleteAuthor(${i})">🗑 O‘chirish</button>
+        ${fileBtn}
+      </div>`;
+    box.appendChild(d);
+    setTimeout(()=>d.classList.add("show"),100);
+  });
+}
+
+function addAuthor(){
+  const name=nameInput.value.trim();
+  const role=roleInput.value.trim();
+  if(!name||!role){ showToast("Ism va yo‘nalishni kiriting!"); return;}
+  
+  const authorObj={name,role};
+
+  if(fileInput.files.length){
+    const file=fileInput.files[0];
+    const reader=new FileReader();
+    reader.onload=e=>{
+      authorObj.file={name:file.name,data:e.target.result,type:file.type};
+      processImage(img=>{
+        authorObj.img=img;
+        saveAuthor(authorObj,"Muallif qo‘shildi ✅");
+      });
+    };
+    reader.readAsDataURL(file);
+  } else {
+    processImage(img=>{
+      authorObj.img=img||'https://via.placeholder.com/120/38bdf8/000?text=?';
+      saveAuthor(authorObj,"Muallif qo‘shildi ✅");
+    });
+  }
+}
+
+function processImage(cb){
+  if(fileInput.files.length && fileInput.files[0].type.startsWith("image/")){
+    const r=new FileReader();
+    const img=new Image();
+    r.onload=e=>img.src=e.target.result;
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=c.height=120; c.getContext("2d").drawImage(img,0,0,120,120); cb(c.toDataURL("image/jpeg",0.7)); }
+    r.readAsDataURL(fileInput.files[0]);
+  } else cb('https://via.placeholder.com/120/38bdf8/000?text=?');
+}
+
+function saveAuthor(authorObj,msg){
+  if(editIndex!==null){
+    authors[editIndex]=authorObj;
+    editIndex=null;
+    showToast("Tahrirlandi ✏️");
+  } else {
+    authors.push(authorObj);
+    showToast(msg);
+  }
+  localStorage.setItem("authors",JSON.stringify(authors));
+  render();
+  resetForm();
+}
+
+function startEdit(i){
+  const a=authors[i];
+  nameInput.value=a.name;
+  roleInput.value=a.role;
+  preview.innerHTML=`<img src="${a.img}">`;
+  document.querySelector(".form-box button").textContent="Saqlash";
+  editIndex=i;
+}
+
+function deleteAuthor(i){
+  authors.splice(i,1);
+  saveLocal();
+  showToast("O‘chirildi 🗑");
+}
+
+function saveLocal(){ localStorage.setItem("authors",JSON.stringify(authors)); render(); resetForm(); }
+
+function resetForm(){
+  nameInput.value=""; roleInput.value=""; fileInput.value=""; preview.innerHTML=""; document.querySelector(".form-box button").textContent="Qo‘shish"; editIndex=null;
+}
+
+/* VIEW FILE IN MODAL */
+function viewFile(i){
+  const file=authors[i].file;
+  if(!file) return;
+  const modal=document.getElementById("fileModal");
+  const frame=document.getElementById("fileFrame");
+
+  // PDF, TXT, HTML, Image ko'rish
+  if(file.type.startsWith("image/") || file.type==="application/pdf" || file.type==="text/html" || file.type==="text/plain"){
+    frame.src=file.data;
+  } else {
+    frame.src="";
+    alert("Bu fayl turi ko‘rilmaydi!");
+  }
+  modal.style.display="flex";
+  showToast("Fayl ochildi 👀");
+}
+
+function closeModal(){ document.getElementById("fileModal").style.display="none"; document.getElementById("fileFrame").src=""; }
+
+render();
+document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
